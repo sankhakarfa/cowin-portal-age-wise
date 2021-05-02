@@ -180,7 +180,9 @@ def get_slots_by_district(args):
     filter_and_print_center_list(centers_data, args)
 
 
-def filter_and_print_center_list(centers_data, options=[], by_district=True):
+def filter_and_print_center_list(centers_data, options=None, by_district=True):
+    if options is None:
+        options = []
     title = ""
     first_text = "Next 7 Days Vaccine Slots"
     end_format = bcolors["ENDC"]
