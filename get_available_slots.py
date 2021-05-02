@@ -38,7 +38,7 @@ bcolors = {
 }
 
 
-class VaccineCenter(object):
+class VaccineCenter:
     """
     Vaccine Center Class to store relevant data
     """
