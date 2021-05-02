@@ -19,6 +19,21 @@ DAILY_KEY = "sessions"
 CALENDAR_KEY = "centers"
 
 
+bcolors = {
+    "BLACK": "\033[0;30m",
+    "WHITE": "\033[0;37m",
+    "HEADER": "\033[95m",
+    "OKBLUE": "\033[94m",
+    "OKCYAN": "\033[96m",
+    "OKGREEN": "\033[92m",
+    "WARNING": "\033[93m",
+    "FAIL": "\033[91m",
+    "ENDC": "\033[0m",
+    "BOLD": "\033[1m",
+    "UNDERLINE": "\033[4m",
+}
+
+
 class VaccineCenter(object):
     """
     Vaccine Center Class to store relevant data
@@ -26,7 +41,8 @@ class VaccineCenter(object):
 
     def __init__(self, vaccine_center_data, daily=False):
         self._vaccine_center_data = vaccine_center_data
-        self._slots = {"18": [], "45": []}
+        self._age_slots = {"18": [], "45": []}
+        self._slots = {}
         self._vaccine_type = [""]
         self._daily = daily
         self._min_age = 45
@@ -44,18 +60,25 @@ class VaccineCenter(object):
     def get_key(self, key):
         return self._vaccine_center_data[key]
 
-    def get_availability_raw(self, age):
-        return self._slots[str(age)]
+    def get_slots_by_age(self, age):
+        return self._age_slots[str(age)]
 
-    def get_availability_formatted(self, age):
-        return " | ".join(self._slots[str(age)])
+    def get_slots(self):
+        return self._slots
+
+    def get_slots_formatted(self):
+        return ", ".join([f'{key}: {value}' for key, value in self._slots.items()])
+
+    def get_slots_by_age_formatted(self, age):
+        return " | ".join(self._age_slots[str(age)])
 
     def _check_availability(self):
         if self._daily:
             slots = self._vaccine_center_data
             self._min_age = min(self._min_age, int(slots["min_age_limit"]))
-            self._slots[str(slots["min_age_limit"])].extend(slots["slots"])
-            self._slots[str(slots["min_age_limit"])].append(
+            self._slots[slots["date"]] = slots["available_capacity"]
+            self._age_slots[str(slots["min_age_limit"])].extend(self._slots)
+            self._age_slots[str(slots["min_age_limit"])].append(
                 "> {}".format(slots["available_capacity"])
             )
             self._vaccine_type.append(slots["vaccine"])
@@ -63,10 +86,11 @@ class VaccineCenter(object):
             slots = self._vaccine_center_data["sessions"]
             for slot in slots:
                 self._min_age = min(self._min_age, int(slot["min_age_limit"]))
+                self._slots[slot["date"]] = slot["available_capacity"]
                 if slot["available_capacity"] > 0:
-                    self._slots[str(slot["min_age_limit"])].append(
+                    self._age_slots[str(slot["min_age_limit"])].append(
                         "{} > {:03}".format(
-                            slot["date"].rstrip("-2021"),
+                            slot["date"].replace("-2021", ""),
                             int(slot["available_capacity"]),
                         )
                     )
@@ -154,6 +178,14 @@ def get_slots_by_district(args):
 
 
 def filter_and_print_center_list(centers_data, options=[], by_district=True):
+    title = ""
+    first_text = "Next 7 Days Vaccine Slots"
+    end_format = bcolors["ENDC"]
+    if options.daily:
+        first_text = "Daily Vaccine Slots"
+    if options.all_centers:
+        first_text = "Showing Centers allowing Vaccines"
+
     center_list = []
     objective = "on" if options.daily else "from"
     for center in centers_data:
@@ -162,40 +194,81 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
     center_list_table = PrettyTable(
         ["Center Name", "Fee", "Location", "Pincode", "Slots"]
     )
+    html_list_table = PrettyTable(
+        ["Center Name", "Min Age", "Fee","Vaccine", "Location", "Pincode", "Slots"]
+    )
     for center in center_list:
-        if (len(center.get_availability_raw(options.min_age)) > 0) or (
-            center.get_min_age() == 18 and options.min_18_centers
-        ):
+        if (len(center.get_slots_by_age(options.min_age)) > 0) or options.all_centers:
+
+            name_colors = (
+                bcolors["OKGREEN"]
+                if len(center.get_slots_by_age(options.min_age)) > 0
+                else bcolors["FAIL"]
+            )
+            fee_colors = bcolors["OKBLUE"] if "Paid" in center.get_fee_type() else ""
             center_list_table.add_row(
                 [
-                    center.get_key("name"),
-                    center.get_fee_type(),
+                    "{}{}{}".format(name_colors, center.get_key("name"),end_format ),
+                    "{}{}{}".format(fee_colors, center.get_fee_type(), end_format),
                     center.get_key("block_name"),
                     center.get_key("pincode"),
-                    center.get_availability_formatted(options.min_age),
+                    center.get_slots_by_age_formatted(options.min_age),
                 ]
             )
+        if options.output_html is not None:
+            html_list_table.add_row(
+                [
+                    center.get_key("name"),
+                    center.get_min_age(),
+                    center.get_fee_type(),
+                    center.get_vaccine_type(),
+                    center.get_key("block_name"),
+                    center.get_key("pincode"),
+                    center.get_slots_formatted(),
+                ]
+            )
+
 
     center_list_table.sortby = "Location"
     center_list_table.align["Center Name"] = "l"
     center_list_table.align["Slots"] = "l"
     if by_district:
-        print(
-            "\n\nNext 7 Days Vaccine Slots for Age: {} yrs+ State: {} District: {} {} {}".format(
-                options.min_age,
-                options.state.capitalize(),
-                options.district.capitalize(),
-                objective,
-                options.date,
-            )
+        title = "\n\n{}{} for Age: {} yrs+ State: {} District: {} {} {} {}".format(
+            bcolors["WARNING"],
+            first_text,
+            options.min_age,
+            options.state.capitalize(),
+            options.district.capitalize(),
+            objective,
+            options.date,
+            end_format,
         )
+        print(title)
     else:
-        print(
-            "\n\nNext 7 Days Vaccine Slots for Age: {} yrs+ Pincode {} {} {}".format(
-                options.min_age, options.pincode, objective, options.date
-            )
+        title = "\n\n{}{} for Age: {} yrs+ Pincode {} {} {}{} {}".format(
+            bcolors["WARNING"],
+            first_text,
+            options.min_age,
+            options.pincode,
+            objective,
+            options.date,
+            end_format,
         )
+        print(title)
     print(center_list_table)
+
+    if options.output_html is not None:
+        if not options.output_html.endswith(".html"):
+            options.output_html = options.output_html + ".html"
+        with open(options.output_html, "w") as html_file:
+            template = (
+                "<html><head><title>{}</title></head><body><h1>{}</h1>{}</html>".format(
+                    first_text, title, html_list_table.get_html_string()
+                )
+            )
+            template = template.replace(end_format,"")
+            template = template.replace(bcolors["WARNING"],"")
+            html_file.write(template)
 
 
 def my_date_type(arg_value, format="%d-%m-%Y"):
@@ -206,7 +279,9 @@ def my_date_type(arg_value, format="%d-%m-%Y"):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Options to run this Cowin Vaccine Slot availability")
+    parser = argparse.ArgumentParser(
+        description="Options to run this Co-WIN Vaccine Slot availability"
+    )
     parser.add_argument("--state", type=str, default="", help="State")
     parser.add_argument("--district", type=str, default="", help="District")
     parser.add_argument("--pincode", type=int, default=0, help="Area pincode")
@@ -214,10 +289,10 @@ def parse_args():
         "--daily", default=False, action="store_true", help="Get input dates data"
     )
     parser.add_argument(
-        "--min_18_centers",
+        "--all-centers",
         default=False,
         action="store_true",
-        help="Check if center allows 18+",
+        help="Show all centers irrespective of availability",
     )
     parser.add_argument(
         "--date",
@@ -226,7 +301,10 @@ def parse_args():
         help="Date in dd-mm-yyyy",
     )
     parser.add_argument(
-        "--min_age", type=int, default=18, help="Min Age Limit Default is 18"
+        "--min-age", type=int, default=18, help="Min Age Limit [Default is 18]"
+    )
+    parser.add_argument(
+        "--output-html", type=str, default=None, help="Output html to OUTPUT_HTML file "
     )
     args = parser.parse_args()
 
@@ -247,8 +325,6 @@ if __name__ == "__main__":
         else:
             print("Minimum Age has to be 18")
             exit()
-        if ARGS.min_18_centers:
-            ARGS.min_age = 18
 
     if ARGS.pincode > 9999:
         get_slots_by_pincode(ARGS)
