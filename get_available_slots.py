@@ -114,9 +114,8 @@ def get_slots_by_pincode(args):
     if req.status_code == 400:
         print(req.json()["error"])
         return
-    else:
-        centers_data = req.json()[search_key]
-        filter_and_print_center_list(centers_data, args, by_district=False)
+    centers_data = req.json()[search_key]
+    filter_and_print_center_list(centers_data, args, by_district=False)
 
 
 def get_slots_by_district(args):
