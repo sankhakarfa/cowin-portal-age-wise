@@ -318,7 +318,7 @@ if __name__ == "__main__":
     ARGS, HELP = parse_args()
     if len(sys.argv) == 1:
         HELP()
-        exit()
+        sys.exit()
     else:
         # Check for Minimum Age
         if ARGS.min_age >= 18 and ARGS.min_age < 45:
@@ -327,7 +327,7 @@ if __name__ == "__main__":
             ARGS.min_age = 45
         else:
             print("Minimum Age has to be 18")
-            exit()
+            sys.exit()
 
     if ARGS.pincode > 9999:
         get_slots_by_pincode(ARGS)
