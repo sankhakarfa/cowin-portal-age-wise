@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-from os import pardir
-import re
+"""
+Author: Sankha Karfa
+Date: 02-May-2021
+
+This script is used to generate slots availability based on cowin public api
+"""
 import sys
 import requests
 import json
