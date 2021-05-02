@@ -11,8 +11,9 @@ def main():
     for item in full_state_list:
         req = requests.get(DISTRICT_LIST_URL.format(item["state_id"]))
         data = req.json()
-        with open('database/{}.json'.format(item["state_name"].lower()), 'w') as f:
+        with open("database/{}.json".format(item["state_name"].lower()), "w") as f:
             json.dump(data, f)
+
 
 if __name__ == "__main__":
     main()
