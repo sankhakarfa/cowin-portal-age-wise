@@ -71,7 +71,7 @@ class VaccineCenter(object):
         return self._slots
 
     def get_slots_formatted(self):
-        return ", ".join([f'{key}: {value}' for key, value in self._slots.items()])
+        return ", ".join([f"{key}: {value}" for key, value in self._slots.items()])
 
     def get_slots_by_age_formatted(self, age):
         return " | ".join(self._age_slots[str(age)])
@@ -199,7 +199,7 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
         ["Center Name", "Fee", "Location", "Pincode", "Slots"]
     )
     html_list_table = PrettyTable(
-        ["Center Name", "Min Age", "Fee","Vaccine", "Location", "Pincode", "Slots"]
+        ["Center Name", "Min Age", "Fee", "Vaccine", "Location", "Pincode", "Slots"]
     )
     for center in center_list:
         if (len(center.get_slots_by_age(options.min_age)) > 0) or options.all_centers:
@@ -212,7 +212,7 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
             fee_colors = bcolors["OKBLUE"] if "Paid" in center.get_fee_type() else ""
             center_list_table.add_row(
                 [
-                    "{}{}{}".format(name_colors, center.get_key("name"),end_format ),
+                    "{}{}{}".format(name_colors, center.get_key("name"), end_format),
                     "{}{}{}".format(fee_colors, center.get_fee_type(), end_format),
                     center.get_key("block_name"),
                     center.get_key("pincode"),
@@ -231,7 +231,6 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
                     center.get_slots_formatted(),
                 ]
             )
-
 
     center_list_table.sortby = "Location"
     center_list_table.align["Center Name"] = "l"
@@ -256,7 +255,7 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
             options.pincode,
             objective,
             options.date,
-            end_format
+            end_format,
         )
         print(title)
     print(center_list_table)
@@ -270,8 +269,8 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
                     first_text, title, html_list_table.get_html_string()
                 )
             )
-            template = template.replace(end_format,"")
-            template = template.replace(bcolors["WARNING"],"")
+            template = template.replace(end_format, "")
+            template = template.replace(bcolors["WARNING"], "")
             html_file.write(template)
 
 
