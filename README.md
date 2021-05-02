@@ -56,7 +56,7 @@ for argument values with space use quotes example --state="west bengal"
 ./get_available_slots.py --min-age=45 --state="West Bengal" --district="Purulia" --all-centers --date="15-05-2021"
 
 #State: West Bengal , Pincode:110001 from Date 15-05-2021
-./get_available_slots.py --min-age=45 --pincode="110001" --district="Purulia" --all-centers --date="15-05-2021"
+./get_available_slots.py --min-age=45 --pincode="110001" --all-centers --date="15-05-2021"
 
 ```
 

@@ -23,19 +23,18 @@ DAILY_KEY = "sessions"
 CALENDAR_KEY = "centers"
 
 
-bcolors = {
-    "BLACK": "\033[0;30m",
-    "WHITE": "\033[0;37m",
-    "HEADER": "\033[95m",
-    "OKBLUE": "\033[94m",
-    "OKCYAN": "\033[96m",
-    "OKGREEN": "\033[92m",
-    "WARNING": "\033[93m",
-    "FAIL": "\033[91m",
-    "ENDC": "\033[0m",
-    "BOLD": "\033[1m",
-    "UNDERLINE": "\033[4m",
-}
+class bcolors:
+    BLACK= "\033[0;30m"
+    WHITE= "\033[0;37m"
+    HEADER= "\033[95m"
+    OKBLUE= "\033[94m"
+    OKCYAN= "\033[96m"
+    OKGREEN= "\033[92m"
+    WARNING= "\033[93m"
+    FAIL= "\033[91m"
+    ENDC= "\033[0m"
+    BOLD= "\033[1m"
+    UNDERLINE= "\033[4m"
 
 
 class VaccineCenter:
@@ -185,7 +184,7 @@ def filter_and_print_center_list(centers_data, options=None, by_district=True):
         options = []
     title = ""
     first_text = "Next 7 Days Vaccine Slots"
-    end_format = bcolors["ENDC"]
+    end_format = bcolors.ENDC
     if options.daily:
         first_text = "Daily Vaccine Slots"
     if options.all_centers:
@@ -206,11 +205,11 @@ def filter_and_print_center_list(centers_data, options=None, by_district=True):
         if (len(center.get_slots_by_age(options.min_age)) > 0) or options.all_centers:
 
             name_colors = (
-                bcolors["OKGREEN"]
+                bcolors.OKGREEN
                 if len(center.get_slots_by_age(options.min_age)) > 0
-                else bcolors["FAIL"]
+                else bcolors.FAIL
             )
-            fee_colors = bcolors["OKBLUE"] if "Paid" in center.get_fee_type() else ""
+            fee_colors = bcolors.OKBLUE if "Paid" in center.get_fee_type() else ""
             center_list_table.add_row(
                 [
                     "{}{}{}".format(name_colors, center.get_key("name"), end_format),
@@ -238,7 +237,7 @@ def filter_and_print_center_list(centers_data, options=None, by_district=True):
     center_list_table.align["Slots"] = "l"
     if by_district:
         title = "\n\n{}{} for Age: {} yrs+ State: {} District: {} {} {} {}".format(
-            bcolors["WARNING"],
+            bcolors.WARNING,
             first_text,
             options.min_age,
             options.state.capitalize(),
@@ -250,7 +249,7 @@ def filter_and_print_center_list(centers_data, options=None, by_district=True):
         print(title)
     else:
         title = "\n\n{}{} for Age: {} yrs+ Pincode {} {} {} {}".format(
-            bcolors["WARNING"],
+            bcolors.WARNING,
             first_text,
             options.min_age,
             options.pincode,
@@ -271,12 +270,12 @@ def filter_and_print_center_list(centers_data, options=None, by_district=True):
                 )
             )
             template = template.replace(end_format, "")
-            template = template.replace(bcolors["WARNING"], "")
+            template = template.replace(bcolors.WARNING, "")
             html_file.write(template)
 
 
-def my_date_type(arg_value, format="%d-%m-%Y"):
-    if not datetime.datetime.strptime(arg_value, format):
+def my_date_type(arg_value, date_format="%d-%m-%Y"):
+    if not datetime.datetime.strptime(arg_value, date_format):
         # Date has to be in dd-mm-yyyy format
         raise argparse.ArgumentTypeError
     return arg_value
