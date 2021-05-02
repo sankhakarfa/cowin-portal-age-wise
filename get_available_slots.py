@@ -151,7 +151,7 @@ def get_slots_by_district(args):
                         if district == district_item["district_name"].lower():
                             district_id = district_item["district_id"]
                             break
-                    if district_id == None:
+                    if district_id is None:
                         print(
                             "Please enter the correct District for {}:".format(
                                 state_item["state_name"]
@@ -161,7 +161,7 @@ def get_slots_by_district(args):
                         print(district_table)
                         return
                 break
-        if state_id == None:
+        if state_id is None:
             print("Please enter the correct state mentioned below:")
             print(state_table)
             return
