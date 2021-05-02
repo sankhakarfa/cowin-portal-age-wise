@@ -12,16 +12,16 @@ from prettytable import PrettyTable
 import datetime
 import argparse
 
+BASE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/"
 
 STATE_LIST_URL = "https://cdn-api.co-vin.in/api/v2/admin/location/states"
 DISTRICT_LIST_URL = "https://cdn-api.co-vin.in/api/v2/admin/location/districts/{}"
-DAILY_PINCODE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin?pincode={}&date={}"
-DAILY_DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?\
-    district_id={}&date={}"
-CALENDAR_BY_DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict\
-    ?district_id={}&date={}"
-CALENDAR_BY_PINCODE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?\
-    pincode={}&date={}"
+
+DAILY_PINCODE_URL = BASE_URL + "findByPin?pincode={}&date={}"
+DAILY_DISTRICT_URL = BASE_URL + "findByDistrict?district_id={}&date={}"
+CALENDAR_BY_DISTRICT_URL = BASE_URL + "calendarByDistrict?district_id={}&date={}"
+CALENDAR_BY_PINCODE_URL = BASE_URL + "calendarByPin?pincode={}&date={}"
+
 DAILY_KEY = "sessions"
 CALENDAR_KEY = "centers"
 
