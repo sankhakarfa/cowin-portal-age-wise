@@ -16,31 +16,34 @@ import argparse
 STATE_LIST_URL = "https://cdn-api.co-vin.in/api/v2/admin/location/states"
 DISTRICT_LIST_URL = "https://cdn-api.co-vin.in/api/v2/admin/location/districts/{}"
 DAILY_PINCODE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin?pincode={}&date={}"
-DAILY_DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id={}&date={}"
-CALENDAR_BY_DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id={}&date={}"
-CALENDAR_BY_PINCODE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode={}&date={}"
+DAILY_DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?\
+    district_id={}&date={}"
+CALENDAR_BY_DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict\
+    ?district_id={}&date={}"
+CALENDAR_BY_PINCODE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?\
+    pincode={}&date={}"
 DAILY_KEY = "sessions"
 CALENDAR_KEY = "centers"
 
 
 class bcolors:
-    BLACK= "\033[0;30m"
-    WHITE= "\033[0;37m"
-    HEADER= "\033[95m"
-    OKBLUE= "\033[94m"
-    OKCYAN= "\033[96m"
-    OKGREEN= "\033[92m"
-    WARNING= "\033[93m"
-    FAIL= "\033[91m"
-    ENDC= "\033[0m"
-    BOLD= "\033[1m"
-    UNDERLINE= "\033[4m"
+    """ Colors for terminal """
+
+    BLACK = "\033[0;30m"
+    WHITE = "\033[0;37m"
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 class VaccineCenter:
-    """
-    Vaccine Center Class to store relevant data
-    """
+    """ Vaccine Center Class to store relevant data """
 
     def __init__(self, vaccine_center_data, daily=False):
         self._vaccine_center_data = vaccine_center_data
@@ -52,30 +55,39 @@ class VaccineCenter:
         self._check_availability()
 
     def get_min_age(self):
+        """ Get Minimum age limit """
         return self._min_age
 
     def get_fee_type(self):
+        """ Get Fee type paid or free """
         return self._vaccine_center_data["fee_type"]
 
     def get_vaccine_type(self):
+        """ Get Vaccine type """
         return "".join(self._vaccine_type)
 
     def get_key(self, key):
+        """ returns value for the given key """
         return self._vaccine_center_data[key]
 
     def get_slots_by_age(self, age):
+        """ Get slots by given age limit """
         return self._age_slots[str(age)]
 
     def get_slots(self):
+        """ Get all slot details """
         return self._slots
 
     def get_slots_formatted(self):
+        """ Get all slot details in string formats """
         return ", ".join([f"{key}: {value}" for key, value in self._slots.items()])
 
     def get_slots_by_age_formatted(self, age):
+        """ Get all slot details by age limit in string formats """
         return " | ".join(self._age_slots[str(age)])
 
     def _check_availability(self):
+        """ Get all slots availability """
         if self._daily:
             slots = self._vaccine_center_data
             self._min_age = min(self._min_age, int(slots["min_age_limit"]))
@@ -104,6 +116,7 @@ class VaccineCenter:
 
 
 def get_slots_by_pincode(args):
+    """ Get slots by given pincode """
     search_key = CALENDAR_KEY
     if args.daily:
         req = requests.get(DAILY_PINCODE_URL.format(args.pincode, args.date))
@@ -118,9 +131,7 @@ def get_slots_by_pincode(args):
 
 
 def get_slots_by_district(args):
-    """
-    Retrieve and print slots when state district is mentioned
-    """
+    """ Retrieve and print slots when state district is mentioned  """
     state = args.state.lower()
     district = args.district.lower()
     district_id = None
@@ -180,6 +191,7 @@ def get_slots_by_district(args):
 
 
 def filter_and_print_center_list(centers_data, options=None, by_district=True):
+    """ Filter and print the center list """
     if options is None:
         options = []
     title = ""
@@ -275,6 +287,7 @@ def filter_and_print_center_list(centers_data, options=None, by_district=True):
 
 
 def my_date_type(arg_value, date_format="%d-%m-%Y"):
+    """ Check entered date format dd-mm-yyyy """
     if not datetime.datetime.strptime(arg_value, date_format):
         # Date has to be in dd-mm-yyyy format
         raise argparse.ArgumentTypeError
@@ -282,6 +295,7 @@ def my_date_type(arg_value, date_format="%d-%m-%Y"):
 
 
 def parse_args():
+    """ Parse given arguments """
     parser = argparse.ArgumentParser(
         description="Options to run this Co-WIN Vaccine Slot availability"
     )
