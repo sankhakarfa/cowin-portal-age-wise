@@ -2,24 +2,25 @@
 Get Cowin Portal slot availability using the following options
 - (State & District) or Pincode
 - Minimum Age Limit
-- If centers are allowing 18+
+- All Centers even if no slot is available  ```[--all-centers]```
 - Daily [Default is 7 days]
 - Output as HTML
 
 ### Requirement:
 
-- python3
+- Python3
 
 
 ### Pip Requirement:
 
-~~~
-pip install prettytable
-~~~
+``` bash
+pip3 install prettytable
+```
 
 ### Usage
 
-~~~
+```
+
 get_available_slots.py [-h] [--state STATE] [--district DISTRICT]
                               [--pincode PINCODE] [--daily] [--all-centers]
                               [--date DATE] [--min-age MIN_AGE]
@@ -38,7 +39,26 @@ optional arguments:
   --min-age MIN_AGE     Min Age Limit [Default is 18]
   --output-html OUTPUT_HTML
                         Output html to OUTPUT_HTML file
-~~~
+
+for argument values with space use quotes example --state="west bengal"
+```
+
+### Examples
+
+``` bash
+#State: West Bengal , District:Purulia
+./get_available_slots.py --min-age=45 --state="West Bengal" --district="Purulia" --all-centers
+
+#State: West Bengal , District:Purulia Output in html
+./get_available_slots.py --min-age=45 --state="West Bengal" --district="Purulia" --all-centers --output-html=test_table.html
+
+#State: West Bengal , District:Purulia from Date 15-05-2021
+./get_available_slots.py --min-age=45 --state="West Bengal" --district="Purulia" --all-centers --date="15-05-2021"
+
+#State: West Bengal , Pincode:110001 from Date 15-05-2021
+./get_available_slots.py --min-age=45 --pincode="110001" --district="Purulia" --all-centers --date="15-05-2021"
+
+```
 
 ### TODO
 - Website

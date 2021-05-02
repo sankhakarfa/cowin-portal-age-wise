@@ -249,14 +249,14 @@ def filter_and_print_center_list(centers_data, options=[], by_district=True):
         )
         print(title)
     else:
-        title = "\n\n{}{} for Age: {} yrs+ Pincode {} {} {}{} {}".format(
+        title = "\n\n{}{} for Age: {} yrs+ Pincode {} {} {} {}".format(
             bcolors["WARNING"],
             first_text,
             options.min_age,
             options.pincode,
             objective,
             options.date,
-            end_format,
+            end_format
         )
         print(title)
     print(center_list_table)
